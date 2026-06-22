@@ -42,7 +42,6 @@ npm run dev
 | `SANITY_API_VERSION` | Yes | `2024-01-01` |
 | `SANITY_TOKEN` | Yes | Read token from Sanity API settings |
 | `PUBLIC_FORM_ENDPOINT` | No | Formspree endpoint for contact form |
-| `PUBLIC_MAPBOX_TOKEN` | No | Only needed for MapEmbed (map works without it) |
 
 ## Sanity Schema
 
