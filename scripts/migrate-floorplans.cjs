@@ -10,7 +10,7 @@ if (!token) {
 }
 
 const client = createClient({
-  projectId: '3g6sb7og',
+  projectId: process.env.SANITY_PROJECT_ID || 'itpavex8',
   dataset: 'production',
   token,
   apiVersion: '2024-01-01',
