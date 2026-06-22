@@ -9,7 +9,7 @@ export default defineType({
       name: "name",
       title: "Area Name",
       type: "string",
-      description: "e.g. 'Richmond', 'Clapham', 'Ealing'",
+      description: "e.g. 'Sampletown North', 'Sampletown South'",
       validation: (r) => r.required(),
     }),
     defineField({
@@ -36,7 +36,7 @@ export default defineType({
       name: "metaTitle",
       title: "Meta Title",
       type: "string",
-      description: "e.g. 'Homes for Sale in Richmond | Your Agency'",
+      description: "e.g. 'Homes for Sale in Sampletown | Your Agency'",
     }),
     defineField({
       name: "metaDescription",

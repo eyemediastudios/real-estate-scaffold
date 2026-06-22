@@ -16,7 +16,7 @@ White-label real estate website template. Designed for UK estate agents. Clone, 
 
 ```bash
 # 1. Clone and install
-git clone <repo-url> && cd wiseman-template
+git clone <repo-url> && cd real-estate-scaffold
 npm install
 
 # 2. Set up Sanity Studio
