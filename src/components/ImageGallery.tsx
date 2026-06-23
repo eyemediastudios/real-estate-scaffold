@@ -54,6 +54,7 @@ export default function ImageGallery({ images, title }: Props) {
       <div className="grid grid-cols-4 grid-rows-2 gap-2 rounded-xl overflow-hidden aspect-[2/1] md:aspect-[5/2]">
         {/* Main image — spans 2 cols 2 rows */}
         <button
+          type="button"
           onClick={() => openLightbox(0)}
           className="col-span-2 row-span-2 relative overflow-hidden cursor-pointer group"
         >
@@ -67,6 +68,7 @@ export default function ImageGallery({ images, title }: Props) {
         {/* Secondary images */}
         {secondaryImages.map((img, i) => (
           <button
+            type="button"
             key={i}
             onClick={() => openLightbox(i + 1)}
             className="relative overflow-hidden cursor-pointer group"
@@ -100,11 +102,12 @@ export default function ImageGallery({ images, title }: Props) {
         >
           {/* Close */}
           <button
+            type="button"
             onClick={closeLightbox}
             className="absolute top-4 right-4 text-white/80 hover:text-white p-2 z-10"
             aria-label="Close"
           >
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg aria-hidden="true" className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -116,6 +119,7 @@ export default function ImageGallery({ images, title }: Props) {
 
           {/* Previous */}
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               prev();
@@ -123,7 +127,7 @@ export default function ImageGallery({ images, title }: Props) {
             className="absolute left-4 text-white/80 hover:text-white p-2 z-10"
             aria-label="Previous image"
           >
-            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg aria-hidden="true" className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -149,6 +153,7 @@ export default function ImageGallery({ images, title }: Props) {
 
           {/* Next */}
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               next();
@@ -156,7 +161,7 @@ export default function ImageGallery({ images, title }: Props) {
             className="absolute right-4 text-white/80 hover:text-white p-2 z-10"
             aria-label="Next image"
           >
-            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg aria-hidden="true" className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>

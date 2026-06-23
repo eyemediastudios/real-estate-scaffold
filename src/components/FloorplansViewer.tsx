@@ -55,11 +55,12 @@ function FloorplanLightbox({
           {floorplans.length}
         </p>
         <button
+          type="button"
           onClick={onClose}
           className="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors"
           aria-label="Close"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -85,11 +86,12 @@ function FloorplanLightbox({
         {/* Prev */}
         {currentIndex > 0 && (
           <button
+            type="button"
             onClick={onPrev}
             className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/60 hover:bg-black/80 text-white rounded-full transition-colors"
             aria-label="Previous floor plan"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -103,11 +105,12 @@ function FloorplanLightbox({
         {/* Next */}
         {currentIndex < floorplans.length - 1 && (
           <button
+            type="button"
             onClick={onNext}
             className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/60 hover:bg-black/80 text-white rounded-full transition-colors"
             aria-label="Next floor plan"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
@@ -119,6 +122,7 @@ function FloorplanLightbox({
         <div className="flex gap-2 mt-4 overflow-x-auto pb-1" style={{ maxWidth: "100%" }}>
           {floorplans.map((fp, i) => (
             <button
+              type="button"
               key={fp._key || i}
               onClick={(e) => {
                 e.stopPropagation();
@@ -178,6 +182,7 @@ export default function FloorplansViewer({ floorplans }: Props) {
       <div className="flex gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: "thin" }}>
         {floorplans.map((fp, i) => (
           <button
+            type="button"
             key={fp._key || i}
             onClick={() => setCurrentIndex(i)}
             className={`flex-shrink-0 flex flex-col items-center gap-1 rounded-lg overflow-hidden border-2 transition-all ${
@@ -195,6 +200,7 @@ export default function FloorplansViewer({ floorplans }: Props) {
             ) : (
               <div className="w-20 h-16 bg-gray-100 flex items-center justify-center">
                 <svg
+                  aria-hidden="true"
                   className="w-5 h-5 text-gray-400"
                   fill="none"
                   stroke="currentColor"
@@ -236,7 +242,7 @@ export default function FloorplansViewer({ floorplans }: Props) {
           {/* Click hint */}
           <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
             <span className="bg-black/60 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg aria-hidden="true" className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -253,6 +259,7 @@ export default function FloorplansViewer({ floorplans }: Props) {
             <>
               {currentIndex > 0 && (
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     goPrev();
@@ -260,7 +267,7 @@ export default function FloorplansViewer({ floorplans }: Props) {
                   className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white/80 hover:bg-white text-gray-800 rounded-full shadow transition-colors opacity-0 group-hover:opacity-100"
                   aria-label="Previous"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -272,6 +279,7 @@ export default function FloorplansViewer({ floorplans }: Props) {
               )}
               {currentIndex < floorplans.length - 1 && (
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     goNext();
@@ -279,7 +287,7 @@ export default function FloorplansViewer({ floorplans }: Props) {
                   className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white/80 hover:bg-white text-gray-800 rounded-full shadow transition-colors opacity-0 group-hover:opacity-100"
                   aria-label="Next"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"

@@ -101,7 +101,9 @@ function VideoEmbed({ video }: { video: Video }) {
 
   if (video.videoType === "Upload" && video.videoFileUrl) {
     return (
-      <video ref={videoRef} src={video.videoFileUrl} controls autoPlay className="w-full h-full" />
+      <video ref={videoRef} src={video.videoFileUrl} controls autoPlay className="w-full h-full">
+        <track kind="captions" srcLang="en" label="English captions" />
+      </video>
     );
   }
 

@@ -186,7 +186,7 @@ export default function MultiImageUpload({ value = [], onChange }: Props) {
               : "bg-blue-600 text-white hover:bg-blue-700"
           }`}
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"

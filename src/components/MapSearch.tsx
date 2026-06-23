@@ -393,6 +393,7 @@ export default function MapSearch({
           <div className="flex gap-2">
             <div className="relative flex-1">
               <svg
+                aria-hidden="true"
                 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
                 fill="none"
                 stroke="currentColor"
@@ -414,6 +415,7 @@ export default function MapSearch({
               />
             </div>
             <button
+              type="button"
               onClick={() => setFiltersOpen(!filtersOpen)}
               className={`flex items-center gap-1.5 px-3 py-2.5 border rounded-lg text-sm font-medium transition-colors ${
                 filtersOpen || hasActiveFilters
@@ -421,7 +423,7 @@ export default function MapSearch({
                   : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
               }`}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -497,6 +499,7 @@ export default function MapSearch({
               </div>
               {hasActiveFilters && (
                 <button
+                  type="button"
                   onClick={clearFilters}
                   className="text-xs text-blue-600 hover:text-blue-800 font-medium"
                 >
@@ -513,7 +516,7 @@ export default function MapSearch({
             {filtered.length} {filtered.length === 1 ? "property" : "properties"}
           </span>
           {selectedId && (
-            <button onClick={() => setSelectedId(null)} className="text-blue-600 hover:underline">
+            <button type="button" onClick={() => setSelectedId(null)} className="text-blue-600 hover:underline">
               Clear selection
             </button>
           )}
@@ -524,6 +527,7 @@ export default function MapSearch({
           {filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-6">
               <svg
+                aria-hidden="true"
                 className="w-12 h-12 text-gray-300 mb-3"
                 fill="none"
                 stroke="currentColor"
@@ -570,6 +574,7 @@ export default function MapSearch({
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <svg
+                          aria-hidden="true"
                           className="w-8 h-8 text-gray-300"
                           fill="none"
                           stroke="currentColor"

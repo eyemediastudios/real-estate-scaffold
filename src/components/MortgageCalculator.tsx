@@ -44,6 +44,7 @@ function CollapsibleSection({ title, children }: { title: string; children: Reac
           {title}
         </span>
         <svg
+          aria-hidden="true"
           className={`w-4 h-4 text-gray-500 flex-shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
           fill="none"
           stroke="currentColor"
@@ -108,7 +109,7 @@ export default function MortgageCalculator({ propertyPrice }: Props) {
       {/* Deposit row */}
       <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
-          <label className="text-xs font-medium text-gray-600">Deposit</label>
+          <span className="text-xs font-medium text-gray-600">Deposit</span>
           <div className="flex items-center gap-2">
             <label className="flex items-center gap-1 text-xs text-gray-500 cursor-pointer">
               <input
@@ -175,7 +176,7 @@ export default function MortgageCalculator({ propertyPrice }: Props) {
       {/* Interest rate */}
       <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
-          <label className="text-xs font-medium text-gray-600">Interest Rate (%)</label>
+          <span className="text-xs font-medium text-gray-600">Interest Rate (%)</span>
           <span className="text-sm font-bold" style={{ color: "var(--color-brand,#1a3a5c)" }}>
             {interestRate.toFixed(1)}%
           </span>
@@ -198,7 +199,7 @@ export default function MortgageCalculator({ propertyPrice }: Props) {
       {/* Term */}
       <div className="mb-5">
         <div className="flex items-center justify-between mb-2">
-          <label className="text-xs font-medium text-gray-600">Term (Years)</label>
+          <span className="text-xs font-medium text-gray-600">Term (Years)</span>
           <span className="text-sm font-bold" style={{ color: "var(--color-brand,#1a3a5c)" }}>
             {termYears} yrs
           </span>
