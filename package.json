@@ -9,7 +9,10 @@
     "astro": "astro",
     "typecheck": "tsc --noEmit",
     "check": "astro check",
-    "check:all": "npm run typecheck && npm run check"
+    "check:all": "npm run typecheck && npm run check",
+    "format": "biome format --write .",
+    "lint": "biome lint .",
+    "biome": "biome check ."
   },
   "engines": {
     "node": ">=24"
@@ -31,6 +34,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
+    "@biomejs/biome": "2.5.1",
     "@types/leaflet": "^1.9.12",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
