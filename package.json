@@ -11,6 +11,9 @@
     "check": "astro check",
     "check:all": "npm run typecheck && npm run check"
   },
+  "engines": {
+    "node": ">=24"
+  },
   "dependencies": {
     "@astrojs/react": "^4.2.0",
     "@astrojs/vercel": "^8.0.0",
