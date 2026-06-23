@@ -121,7 +121,13 @@ export default function ImageGallery({ images, title }: Props) {
             className="absolute top-4 right-4 text-white/80 hover:text-white p-2 z-10"
             aria-label="Close"
           >
-            <svg aria-hidden="true" className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              aria-hidden="true"
+              className="w-8 h-8"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -141,7 +147,13 @@ export default function ImageGallery({ images, title }: Props) {
             className="absolute left-4 text-white/80 hover:text-white p-2 z-10"
             aria-label="Previous image"
           >
-            <svg aria-hidden="true" className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              aria-hidden="true"
+              className="w-10 h-10"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -175,7 +187,13 @@ export default function ImageGallery({ images, title }: Props) {
             className="absolute right-4 text-white/80 hover:text-white p-2 z-10"
             aria-label="Next image"
           >
-            <svg aria-hidden="true" className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              aria-hidden="true"
+              className="w-10 h-10"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
