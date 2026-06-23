@@ -46,7 +46,17 @@ function FloorplanLightbox({
   return (
     <div
       className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/95 p-4"
-      onClick={onClose}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      onKeyDown={(e) => {
+        if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          onClose();
+        }
+      }}
+      role="dialog"
+      aria-modal="true"
     >
       {/* Header */}
       <div className="w-full max-w-5xl flex items-center justify-between mb-4">
@@ -72,10 +82,7 @@ function FloorplanLightbox({
       </div>
 
       {/* Image */}
-      <div
-        className="relative flex-1 flex items-center justify-center w-full max-w-5xl"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="relative flex-1 flex items-center justify-center w-full max-w-5xl">
         <img
           src={`${current.image.asset.url}?w=1400&auto=format`}
           alt={current.label || "Floor plan"}
@@ -230,14 +237,20 @@ export default function FloorplansViewer({ floorplans }: Props) {
 
       {/* Main display */}
       {currentUrl && (
-        <div className="relative mt-4 rounded-xl overflow-hidden bg-gray-50 border border-gray-200 group cursor-zoom-in">
-          <img
-            src={currentUrl}
-            alt={current.label || "Floor plan"}
-            className="w-full h-auto object-contain"
-            style={{ maxHeight: "500px" }}
+        <div className="relative mt-4 rounded-xl overflow-hidden bg-gray-50 border border-gray-200 group">
+          <button
+            type="button"
             onClick={openLightbox}
-          />
+            className="block w-full cursor-zoom-in focus:outline-none focus:ring-2 focus:ring-blue-500"
+            aria-label={`View floor plan: ${current.label || "Floor plan"}`}
+          >
+            <img
+              src={currentUrl}
+              alt={current.label || "Floor plan"}
+              className="w-full h-auto object-contain"
+              style={{ maxHeight: "500px" }}
+            />
+          </button>
 
           {/* Click hint */}
           <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">

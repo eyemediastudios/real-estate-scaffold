@@ -546,7 +546,8 @@ export default function MapSearch({
           ) : (
             <div className="divide-y divide-gray-100">
               {filtered.map((p) => (
-                <div
+                <button
+                  type="button"
                   key={p._id}
                   ref={(el) => {
                     if (el) listRefs.current.set(p._id, el);
@@ -554,7 +555,7 @@ export default function MapSearch({
                   onMouseEnter={() => handleCardHover(p._id)}
                   onMouseLeave={() => handleCardHover(null)}
                   onClick={() => handleCardClick(p._id)}
-                  className={`flex gap-3 p-3 cursor-pointer transition-all duration-150 ${
+                  className={`flex gap-3 p-3 w-full text-left cursor-pointer transition-all duration-150 ${
                     selectedId === p._id
                       ? "bg-blue-50 border-l-[3px] border-l-blue-500"
                       : hoveredId === p._id
@@ -619,7 +620,7 @@ export default function MapSearch({
                       {p.propertyType && <span className="text-gray-400">{p.propertyType}</span>}
                     </div>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           )}

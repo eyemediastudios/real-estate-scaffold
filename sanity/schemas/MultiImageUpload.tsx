@@ -117,6 +117,7 @@ export default function MultiImageUpload({ value = [], onChange }: Props) {
   }));
 
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: drag-state cleanup hook only; upload affordance handled by sibling file input label
     <div className="space-y-3" onMouseUp={handleDragEnd}>
       {/* Image grid */}
       {items.length > 0 && (
@@ -125,6 +126,7 @@ export default function MultiImageUpload({ value = [], onChange }: Props) {
             const isBeingDragged = dragIndex === index;
             const isDropTarget = overIndex === index && dragIndex !== index;
             return (
+              // biome-ignore lint/a11y/noStaticElementInteractions: drag-and-drop cell; delete affordance handled by sibling Remove button
               <div
                 key={item._key}
                 draggable

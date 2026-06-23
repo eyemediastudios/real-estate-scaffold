@@ -135,6 +135,7 @@ function VideoModal({ video, onClose }: { video: Video; onClose: () => void }) {
   };
 
   return (
+    // biome-ignore lint/a11y/useKeyWithClickEvents: dialog overlay click-outside; close handled by sibling button + global Escape listener
     <div
       ref={overlayRef}
       onClick={handleOverlayClick}

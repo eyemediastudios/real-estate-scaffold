@@ -98,7 +98,17 @@ export default function ImageGallery({ images, title }: Props) {
       {lightboxIndex !== null && (
         <div
           className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
-          onClick={closeLightbox}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) closeLightbox();
+          }}
+          onKeyDown={(e) => {
+            if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) {
+              e.preventDefault();
+              closeLightbox();
+            }
+          }}
+          role="dialog"
+          aria-modal="true"
         >
           {/* Close */}
           <button
@@ -138,7 +148,7 @@ export default function ImageGallery({ images, title }: Props) {
           </button>
 
           {/* Image */}
-          <div className="max-w-5xl max-h-[85vh] px-16" onClick={(e) => e.stopPropagation()}>
+          <div className="max-w-5xl max-h-[85vh] px-16">
             <img
               src={`${images[lightboxIndex].asset.url}?w=1600&auto=format&q=90`}
               alt={images[lightboxIndex].alt || `${title} - image ${lightboxIndex + 1}`}
