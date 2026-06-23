@@ -7,5 +7,6 @@
     "paths": {
       "@/*": ["src/*"]
     }
-  }
+  },
+  "include": ["src/**/*", "astro.config.mjs", ".astro/types.d.ts"]
 }
