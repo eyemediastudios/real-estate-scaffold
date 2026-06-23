@@ -1,4 +1,4 @@
-import { defineType, defineField } from "sanity";
+import { defineField, defineType } from "sanity";
 
 export default defineType({
   name: "siteSettings",
@@ -71,7 +71,14 @@ export default defineType({
         {
           type: "object",
           fields: [
-            { name: "platform", title: "Platform", type: "string", options: { list: ["Facebook", "Instagram", "Twitter", "LinkedIn", "YouTube", "TikTok"] } },
+            {
+              name: "platform",
+              title: "Platform",
+              type: "string",
+              options: {
+                list: ["Facebook", "Instagram", "Twitter", "LinkedIn", "YouTube", "TikTok"],
+              },
+            },
             { name: "url", title: "URL", type: "url" },
           ],
           preview: {

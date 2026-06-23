@@ -1,4 +1,5 @@
-import { useState, useMemo, useCallback, useEffect, useRef } from "react";
+import type { Map as LeafletMap, Marker as LeafletMarker } from "leaflet";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 // ── Types ──
 interface PropertyListing {
@@ -40,8 +41,13 @@ function formatPrice(price: number, qualifier?: string): string {
 
 function statusLabel(s: string): string {
   const m: Record<string, string> = {
-    "for-sale": "For Sale", "under-offer": "Under Offer", "sold-stc": "Sold STC",
-    sold: "Sold", "for-rent": "To Let", "let-agreed": "Let Agreed", let: "Let",
+    "for-sale": "For Sale",
+    "under-offer": "Under Offer",
+    "sold-stc": "Sold STC",
+    sold: "Sold",
+    "for-rent": "To Let",
+    "let-agreed": "Let Agreed",
+    let: "Let",
   };
   return m[s] || s;
 }
@@ -51,6 +57,9 @@ function statusDot(s: string): string {
   if (s === "under-offer" || s === "let-agreed") return "#d97706";
   return "#dc2626";
 }
+
+// ── Marker popup close-timer tracking ──
+const closeTimers = new WeakMap<LeafletMarker, ReturnType<typeof setTimeout> | null>();
 
 // ── Price range presets ──
 const PRICE_RANGES = [
@@ -65,8 +74,11 @@ const PRICE_RANGES = [
 
 const BED_OPTIONS = [
   { value: "", label: "Any beds" },
-  { value: "1", label: "1+" }, { value: "2", label: "2+" },
-  { value: "3", label: "3+" }, { value: "4", label: "4+" }, { value: "5", label: "5+" },
+  { value: "1", label: "1+" },
+  { value: "2", label: "2+" },
+  { value: "3", label: "3+" },
+  { value: "4", label: "4+" },
+  { value: "5", label: "5+" },
 ];
 
 const STATUS_OPTIONS = [
@@ -110,10 +122,10 @@ export default function MapSearch({
 
   // ── Refs ──
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstance = useRef<any>(null);
-  const markersRef = useRef<Map<string, any>>(new Map());
+  const mapInstance = useRef<LeafletMap | null>(null);
+  const markersRef = useRef<Map<string, LeafletMarker>>(new Map());
   const listRefs = useRef<Map<string, HTMLElement>>(new Map());
-  const LRef = useRef<any>(null);
+  const LRef = useRef<typeof import("leaflet") | null>(null);
 
   // ── Filtered + sorted ──
   const filtered = useMemo(() => {
@@ -121,40 +133,50 @@ export default function MapSearch({
 
     if (search.trim()) {
       const q = search.toLowerCase();
-      result = result.filter((p) =>
-        p.title.toLowerCase().includes(q) ||
-        p.town?.toLowerCase().includes(q) ||
-        p.postcode?.toLowerCase().includes(q)
+      result = result.filter(
+        (p) =>
+          p.title.toLowerCase().includes(q) ||
+          p.town?.toLowerCase().includes(q) ||
+          p.postcode?.toLowerCase().includes(q)
       );
     }
     if (status) result = result.filter((p) => p.status === status);
     if (town) result = result.filter((p) => p.town === town);
     if (type) result = result.filter((p) => p.propertyType === type);
-    if (minBeds) result = result.filter((p) => (p.bedrooms ?? 0) >= parseInt(minBeds));
+    if (minBeds) result = result.filter((p) => (p.bedrooms ?? 0) >= parseInt(minBeds, 10));
     if (priceRange) {
       const [min, max] = priceRange.split("-").map(Number);
       result = result.filter((p) => p.price >= min && p.price <= max);
     }
 
     switch (sort) {
-      case "price-asc": result.sort((a, b) => a.price - b.price); break;
-      case "price-desc": result.sort((a, b) => b.price - a.price); break;
-      case "beds-desc": result.sort((a, b) => (b.bedrooms ?? 0) - (a.bedrooms ?? 0)); break;
+      case "price-asc":
+        result.sort((a, b) => a.price - b.price);
+        break;
+      case "price-desc":
+        result.sort((a, b) => b.price - a.price);
+        break;
+      case "beds-desc":
+        result.sort((a, b) => (b.bedrooms ?? 0) - (a.bedrooms ?? 0));
+        break;
     }
 
     return result;
   }, [properties, status, town, type, minBeds, priceRange, sort, search]);
 
   // ── Init Leaflet ──
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentional one-time init; view changes handled by the sync effect below
   useEffect(() => {
     if (!mapRef.current || mapInstance.current) return;
 
     const initMap = async () => {
+      const el = mapRef.current;
+      if (!el) return;
       try {
         const L = await import("leaflet");
         LRef.current = L;
 
-        const map = L.map(mapRef.current!, {
+        const map = L.map(el, {
           scrollWheelZoom: false,
           zoomControl: true,
         }).setView([mapCenter.lat, mapCenter.lng], mapZoom);
@@ -185,29 +207,39 @@ export default function MapSearch({
     };
   }, []);
 
+  // ── Sync view with mapCenter/mapZoom props ──
+  useEffect(() => {
+    if (!mapInstance.current) return;
+    mapInstance.current.setView([mapCenter.lat, mapCenter.lng], mapZoom);
+  }, [mapCenter.lat, mapCenter.lng, mapZoom]);
+
   // ── Create custom marker icon ──
-  const createIcon = useCallback((price: number, qualifier: string | undefined, isHovered: boolean, isSelected: boolean) => {
-    const L = LRef.current;
-    if (!L) return null;
+  const createIcon = useCallback(
+    (price: number, _qualifier: string | undefined, isHovered: boolean, isSelected: boolean) => {
+      const L = LRef.current;
+      if (!L) return null;
 
-    const label = price >= 1000000
-      ? `£${(price / 1000000).toFixed(1)}m`
-      : `£${Math.round(price / 1000)}k`;
+      const label =
+        price >= 1000000 ? `£${(price / 1000000).toFixed(1)}m` : `£${Math.round(price / 1000)}k`;
 
-    const bg = isSelected
-      ? "var(--color-brand, #1a3a5c)"
-      : isHovered
-        ? "var(--color-brand-light, #2a5a8c)"
-        : "#ffffff";
-    const color = isSelected || isHovered ? "#ffffff" : "var(--color-brand, #1a3a5c)";
-    const border = isSelected || isHovered ? "transparent" : "var(--color-brand, #1a3a5c)";
-    const scale = isHovered ? "scale(1.15)" : "scale(1)";
-    const shadow = isSelected ? "0 4px 12px rgba(0,0,0,0.3)" : isHovered ? "0 2px 8px rgba(0,0,0,0.2)" : "0 1px 4px rgba(0,0,0,0.15)";
-    const zIdx = isSelected ? 1000 : isHovered ? 999 : 1;
+      const bg = isSelected
+        ? "var(--color-brand, #1a3a5c)"
+        : isHovered
+          ? "var(--color-brand-light, #2a5a8c)"
+          : "#ffffff";
+      const color = isSelected || isHovered ? "#ffffff" : "var(--color-brand, #1a3a5c)";
+      const border = isSelected || isHovered ? "transparent" : "var(--color-brand, #1a3a5c)";
+      const scale = isHovered ? "scale(1.15)" : "scale(1)";
+      const shadow = isSelected
+        ? "0 4px 12px rgba(0,0,0,0.3)"
+        : isHovered
+          ? "0 2px 8px rgba(0,0,0,0.2)"
+          : "0 1px 4px rgba(0,0,0,0.15)";
+      const zIdx = isSelected ? 1000 : isHovered ? 999 : 1;
 
-    return L.divIcon({
-      className: "",
-      html: `<div style="
+      return L.divIcon({
+        className: "",
+        html: `<div style="
         background:${bg}; color:${color}; border:2px solid ${border};
         padding:5px 12px; border-radius:8px; font-size:13px; font-weight:700;
         font-family:var(--font-body, system-ui, sans-serif);
@@ -215,10 +247,12 @@ export default function MapSearch({
         box-shadow:${shadow}; z-index:${zIdx}; position:relative;
         cursor:pointer; min-width:60px; text-align:center;
       ">${label}</div>`,
-      iconSize: [0, 0],
-      iconAnchor: [0, 0],
-    });
-  }, []);
+        iconSize: [0, 0],
+        iconAnchor: [0, 0],
+      });
+    },
+    []
+  );
 
   // ── Sync markers with filtered properties ──
   useEffect(() => {
@@ -227,7 +261,9 @@ export default function MapSearch({
     const map = mapInstance.current;
 
     // Remove old markers
-    markersRef.current.forEach((marker) => map.removeLayer(marker));
+    for (const marker of markersRef.current.values()) {
+      map.removeLayer(marker);
+    }
     markersRef.current.clear();
 
     // Add new markers
@@ -273,27 +309,36 @@ export default function MapSearch({
           </div>
         </div>
       `;
-      marker.bindPopup(popupContent, { maxWidth: 300, closeButton: false, autoPan: true, autoPanPadding: [200, 200] });
+      marker.bindPopup(popupContent, {
+        maxWidth: 300,
+        closeButton: false,
+        autoPan: true,
+        autoPanPadding: [200, 200],
+      });
 
       // Track popup hover — clear close timer when entering popup, start timer when leaving
-      marker.on('popupopen', () => {
+      marker.on("popupopen", () => {
         const popup = marker.getPopup();
         if (!popup) return;
         const el = popup.getElement?.();
         if (!el) return;
-        const content = el.querySelector('.leaflet-popup-content');
+        const content = el.querySelector(".leaflet-popup-content");
         if (!content) return;
 
-        content.addEventListener('mouseenter', () => {
-          if (marker._closeTimer) {
-            clearTimeout(marker._closeTimer);
-            marker._closeTimer = null;
+        content.addEventListener("mouseenter", () => {
+          const timer = closeTimers.get(marker);
+          if (timer) {
+            clearTimeout(timer);
+            closeTimers.set(marker, null);
           }
         });
-        content.addEventListener('mouseleave', () => {
-          marker._closeTimer = setTimeout(() => {
-            marker.closePopup();
-          }, 400);
+        content.addEventListener("mouseleave", () => {
+          closeTimers.set(
+            marker,
+            setTimeout(() => {
+              marker.closePopup();
+            }, 400)
+          );
         });
       });
 
@@ -304,7 +349,7 @@ export default function MapSearch({
     if (bounds.length > 0) {
       map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
     }
-  }, [filtered, mapReady]);
+  }, [filtered, mapReady, createIcon]);
 
   // ── Update individual marker icons on hover/select change ──
   useEffect(() => {
@@ -317,7 +362,7 @@ export default function MapSearch({
       if (icon) marker.setIcon(icon);
       marker.setZIndexOffset(id === selectedId ? 1000 : id === hoveredId ? 999 : 0);
     });
-  }, [hoveredId, selectedId, filtered, mapReady]);
+  }, [hoveredId, selectedId, filtered, mapReady, createIcon]);
 
   // ── Sidebar card hover → pan map ──
   const handleCardHover = useCallback((id: string | null) => {
@@ -344,25 +389,41 @@ export default function MapSearch({
   }, []);
 
   const clearFilters = () => {
-    setStatus(""); setTown(""); setType(""); setMinBeds(""); setPriceRange(""); setSearch("");
+    setStatus("");
+    setTown("");
+    setType("");
+    setMinBeds("");
+    setPriceRange("");
+    setSearch("");
   };
 
   const hasActiveFilters = status || town || type || minBeds || priceRange || search;
 
   // ── Select styling ──
-  const selCls = "w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-300 appearance-none cursor-pointer";
+  const selCls =
+    "w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-300 appearance-none cursor-pointer";
 
   return (
     <div className="flex flex-col lg:flex-row h-[calc(100vh-80px)] lg:h-[calc(100vh-80px)] overflow-hidden bg-gray-50">
       {/* ═══ SIDEBAR ═══ */}
       <div className="w-full lg:w-[420px] xl:w-[460px] flex flex-col border-r border-gray-200 bg-white order-2 lg:order-1 h-1/2 lg:h-full">
-
         {/* Search + filter toggle */}
         <div className="px-4 pt-4 pb-2 border-b border-gray-100">
           <div className="flex gap-2">
             <div className="relative flex-1">
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <svg
+                aria-hidden="true"
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
               <input
                 type="text"
@@ -373,6 +434,7 @@ export default function MapSearch({
               />
             </div>
             <button
+              type="button"
               onClick={() => setFiltersOpen(!filtersOpen)}
               className={`flex items-center gap-1.5 px-3 py-2.5 border rounded-lg text-sm font-medium transition-colors ${
                 filtersOpen || hasActiveFilters
@@ -380,13 +442,22 @@ export default function MapSearch({
                   : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
               }`}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              <svg
+                aria-hidden="true"
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+                />
               </svg>
               Filters
-              {hasActiveFilters && (
-                <span className="w-2 h-2 rounded-full bg-blue-500" />
-              )}
+              {hasActiveFilters && <span className="w-2 h-2 rounded-full bg-blue-500" />}
             </button>
           </div>
 
@@ -394,29 +465,69 @@ export default function MapSearch({
           {filtersOpen && (
             <div className="mt-3 pb-2 space-y-2 animate-slideDown">
               <div className="grid grid-cols-2 gap-2">
-                <select value={status} onChange={(e) => setStatus(e.target.value)} className={selCls}>
-                  {STATUS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                <select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                  className={selCls}
+                >
+                  {STATUS_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
                 </select>
                 <select value={town} onChange={(e) => setTown(e.target.value)} className={selCls}>
                   <option value="">All areas</option>
-                  {towns.map((t) => <option key={t} value={t}>{t}</option>)}
+                  {towns.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
                 </select>
                 <select value={type} onChange={(e) => setType(e.target.value)} className={selCls}>
                   <option value="">All types</option>
-                  {propertyTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+                  {propertyTypes.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
                 </select>
-                <select value={minBeds} onChange={(e) => setMinBeds(e.target.value)} className={selCls}>
-                  {BED_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                <select
+                  value={minBeds}
+                  onChange={(e) => setMinBeds(e.target.value)}
+                  className={selCls}
+                >
+                  {BED_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
                 </select>
-                <select value={priceRange} onChange={(e) => setPriceRange(e.target.value)} className={selCls}>
-                  {PRICE_RANGES.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                <select
+                  value={priceRange}
+                  onChange={(e) => setPriceRange(e.target.value)}
+                  className={selCls}
+                >
+                  {PRICE_RANGES.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
                 </select>
                 <select value={sort} onChange={(e) => setSort(e.target.value)} className={selCls}>
-                  {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                  {SORT_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
                 </select>
               </div>
               {hasActiveFilters && (
-                <button onClick={clearFilters} className="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                >
                   Clear all filters
                 </button>
               )}
@@ -426,9 +537,15 @@ export default function MapSearch({
 
         {/* Results count */}
         <div className="px-4 py-2 text-xs text-gray-500 border-b border-gray-50 flex items-center justify-between">
-          <span>{filtered.length} {filtered.length === 1 ? "property" : "properties"}</span>
+          <span>
+            {filtered.length} {filtered.length === 1 ? "property" : "properties"}
+          </span>
           {selectedId && (
-            <button onClick={() => setSelectedId(null)} className="text-blue-600 hover:underline">
+            <button
+              type="button"
+              onClick={() => setSelectedId(null)}
+              className="text-blue-600 hover:underline"
+            >
               Clear selection
             </button>
           )}
@@ -438,8 +555,19 @@ export default function MapSearch({
         <div className="flex-1 overflow-y-auto overscroll-contain">
           {filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-6">
-              <svg className="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              <svg
+                aria-hidden="true"
+                className="w-12 h-12 text-gray-300 mb-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                />
               </svg>
               <p className="text-gray-500 text-sm font-medium mb-1">No properties found</p>
               <p className="text-gray-400 text-xs">Try adjusting your filters</p>
@@ -447,13 +575,16 @@ export default function MapSearch({
           ) : (
             <div className="divide-y divide-gray-100">
               {filtered.map((p) => (
-                <div
+                <button
+                  type="button"
                   key={p._id}
-                  ref={(el) => { if (el) listRefs.current.set(p._id, el); }}
+                  ref={(el) => {
+                    if (el) listRefs.current.set(p._id, el);
+                  }}
                   onMouseEnter={() => handleCardHover(p._id)}
                   onMouseLeave={() => handleCardHover(null)}
                   onClick={() => handleCardClick(p._id)}
-                  className={`flex gap-3 p-3 cursor-pointer transition-all duration-150 ${
+                  className={`flex gap-3 p-3 w-full text-left cursor-pointer transition-all duration-150 ${
                     selectedId === p._id
                       ? "bg-blue-50 border-l-[3px] border-l-blue-500"
                       : hoveredId === p._id
@@ -472,8 +603,19 @@ export default function MapSearch({
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        <svg
+                          aria-hidden="true"
+                          className="w-8 h-8 text-gray-300"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1.5}
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
                         </svg>
                       </div>
                     )}
@@ -482,11 +624,17 @@ export default function MapSearch({
                   {/* Details */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
-                      <p className="text-base font-bold text-gray-900 leading-tight" style={{ fontFamily: "var(--font-display, Georgia, serif)" }}>
+                      <p
+                        className="text-base font-bold text-gray-900 leading-tight"
+                        style={{ fontFamily: "var(--font-display, Georgia, serif)" }}
+                      >
                         {formatPrice(p.price, p.priceQualifier)}
                       </p>
                       <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-gray-500 flex-shrink-0">
-                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: statusDot(p.status) }} />
+                        <span
+                          className="w-1.5 h-1.5 rounded-full"
+                          style={{ background: statusDot(p.status) }}
+                        />
                         {statusLabel(p.status)}
                       </span>
                     </div>
@@ -501,7 +649,7 @@ export default function MapSearch({
                       {p.propertyType && <span className="text-gray-400">{p.propertyType}</span>}
                     </div>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           )}

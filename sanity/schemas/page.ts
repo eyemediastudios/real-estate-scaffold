@@ -1,4 +1,4 @@
-import { defineType, defineField } from "sanity";
+import { defineField, defineType } from "sanity";
 
 export default defineType({
   name: "page",
@@ -22,10 +22,7 @@ export default defineType({
       name: "body",
       title: "Body",
       type: "array",
-      of: [
-        { type: "block" },
-        { type: "image", options: { hotspot: true } },
-      ],
+      of: [{ type: "block" }, { type: "image", options: { hotspot: true } }],
     }),
     defineField({
       name: "metaTitle",

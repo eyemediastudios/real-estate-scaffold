@@ -1,4 +1,4 @@
-import { defineType, defineField } from "sanity";
+import { defineField, defineType, type Rule } from "sanity";
 import MultiImageUpload from "./MultiImageUpload";
 
 export default defineType({
@@ -84,14 +84,7 @@ export default defineType({
       type: "string",
       group: "details",
       options: {
-        list: [
-          "Guide Price",
-          "Offers Over",
-          "Offers In Region Of",
-          "Fixed Price",
-          "From",
-          "POA",
-        ],
+        list: ["Guide Price", "Offers Over", "Offers In Region Of", "Fixed Price", "From", "POA"],
       },
       initialValue: "Guide Price",
     }),
@@ -218,7 +211,7 @@ export default defineType({
       group: "media",
       options: {
         sortable: true,
-        layout: 'grid',
+        layout: "grid",
       },
       of: [
         {
@@ -263,7 +256,7 @@ export default defineType({
               title: "Label",
               type: "string",
               description: "e.g. Ground Floor, First Floor, Second Floor",
-              validation: (r: any) => r.required(),
+              validation: (r: Rule) => r.required(),
             },
             {
               name: "image",
@@ -301,7 +294,7 @@ export default defineType({
               name: "title",
               title: "Title",
               type: "string",
-              validation: (r: any) => r.required(),
+              validation: (r: Rule) => r.required(),
             },
             {
               name: "videoType",
@@ -314,14 +307,15 @@ export default defineType({
                   { title: "Upload", value: "Upload" },
                 ],
               },
-              validation: (r: any) => r.required(),
+              validation: (r: Rule) => r.required(),
             },
             {
               name: "videoUrl",
               title: "Video URL",
               type: "url",
               description: "YouTube or Vimeo link",
-              hidden: ({ parent }: any) => parent?.videoType !== "YouTube" && parent?.videoType !== "Vimeo",
+              hidden: ({ parent }: { parent?: { videoType?: string } }) =>
+                parent?.videoType !== "YouTube" && parent?.videoType !== "Vimeo",
             },
             {
               name: "videoFile",
@@ -329,7 +323,8 @@ export default defineType({
               type: "file",
               options: { accept: "video/mp4,video/webm" },
               description: "Direct upload for self-hosted video",
-              hidden: ({ parent }: any) => parent?.videoType !== "Upload",
+              hidden: ({ parent }: { parent?: { videoType?: string } }) =>
+                parent?.videoType !== "Upload",
             },
             {
               name: "thumbnail",
@@ -337,7 +332,8 @@ export default defineType({
               type: "image",
               options: { hotspot: true },
               description: "Custom thumbnail — auto-generated from YouTube/Vimeo if left blank",
-              hidden: ({ parent }: any) => parent?.videoType === "Upload",
+              hidden: ({ parent }: { parent?: { videoType?: string } }) =>
+                parent?.videoType === "Upload",
             },
           ],
         },
@@ -385,9 +381,7 @@ export default defineType({
       beds: "bedrooms",
     },
     prepare({ title, subtitle, media, price, beds }) {
-      const formattedPrice = price
-        ? `£${price.toLocaleString("en-GB")}`
-        : "POA";
+      const formattedPrice = price ? `£${price.toLocaleString("en-GB")}` : "POA";
       return {
         title,
         subtitle: `${subtitle} · ${formattedPrice} · ${beds ?? "?"} bed`,

@@ -6,11 +6,7 @@ interface Props {
   formEndpoint?: string;
 }
 
-export default function ContactForm({
-  propertyTitle,
-  branchEmail,
-  formEndpoint,
-}: Props) {
+export default function ContactForm({ propertyTitle, branchEmail, formEndpoint }: Props) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -29,9 +25,7 @@ export default function ContactForm({
       const endpoint = formEndpoint || import.meta.env?.PUBLIC_FORM_ENDPOINT;
       if (!endpoint) {
         // Fallback: mailto link
-        const subject = propertyTitle
-          ? `Enquiry about ${propertyTitle}`
-          : "Website Enquiry";
+        const subject = propertyTitle ? `Enquiry about ${propertyTitle}` : "Website Enquiry";
         const body = `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\n\n${formData.message}`;
         const mailto = branchEmail || "info@example.com";
         window.location.href = `mailto:${mailto}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
@@ -75,8 +69,11 @@ export default function ContactForm({
     <div onSubmit={handleSubmit}>
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+          <label htmlFor="contact-name" className="block text-sm font-medium text-gray-700 mb-1">
+            Name *
+          </label>
           <input
+            id="contact-name"
             type="text"
             required
             value={formData.name}
@@ -88,8 +85,11 @@ export default function ContactForm({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+            <label htmlFor="contact-email" className="block text-sm font-medium text-gray-700 mb-1">
+              Email *
+            </label>
             <input
+              id="contact-email"
               type="email"
               required
               value={formData.email}
@@ -99,8 +99,11 @@ export default function ContactForm({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+            <label htmlFor="contact-phone" className="block text-sm font-medium text-gray-700 mb-1">
+              Phone
+            </label>
             <input
+              id="contact-phone"
               type="tel"
               value={formData.phone}
               onChange={(e) => setFormData((d) => ({ ...d, phone: e.target.value }))}
@@ -111,8 +114,11 @@ export default function ContactForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Message *</label>
+          <label htmlFor="contact-message" className="block text-sm font-medium text-gray-700 mb-1">
+            Message *
+          </label>
           <textarea
+            id="contact-message"
             required
             rows={4}
             value={formData.message}
@@ -123,7 +129,9 @@ export default function ContactForm({
         </div>
 
         {status === "error" && (
-          <p className="text-red-600 text-sm">Something went wrong. Please try again or call us directly.</p>
+          <p className="text-red-600 text-sm">
+            Something went wrong. Please try again or call us directly.
+          </p>
         )}
 
         <button

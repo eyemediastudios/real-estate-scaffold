@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface Video {
   _key?: string;
@@ -38,20 +38,25 @@ function extractVimeoId(url: string): string | null {
 
 function getYouTubeThumbnail(url: string): string {
   const id = extractYouTubeId(url);
-  return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : '';
+  return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : "";
 }
 
 function getVimeoThumbnail(url: string, callback: (url: string) => void): void {
   const id = extractVimeoId(url);
-  if (!id) { callback(''); return; }
+  if (!id) {
+    callback("");
+    return;
+  }
   fetch(`https://vimeo.com/api/v2/video/${id}.json`)
-    .then(r => r.json())
-    .then(data => { callback(data?.[0]?.thumbnail_large || ''); })
-    .catch(() => callback(''));
+    .then((r) => r.json())
+    .then((data) => {
+      callback(data?.[0]?.thumbnail_large || "");
+    })
+    .catch(() => callback(""));
 }
 
 function formatUrl(url: string): string {
-  return url.replace('http://', 'https://');
+  return url.replace("http://", "https://");
 }
 
 // ─── Video Embed ───────────────────────────────────────────────────────────────
@@ -66,11 +71,12 @@ function VideoEmbed({ video }: { video: Video }) {
     };
   }, []);
 
-  if (video.videoType === 'YouTube' && video.videoUrl) {
+  if (video.videoType === "YouTube" && video.videoUrl) {
     const id = extractYouTubeId(formatUrl(video.videoUrl));
     if (!id) return null;
     return (
       <iframe
+        title={video.title || "Property video tour"}
         src={`https://www.youtube.com/embed/${id}?autoplay=1`}
         className="w-full h-full"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -79,11 +85,12 @@ function VideoEmbed({ video }: { video: Video }) {
     );
   }
 
-  if (video.videoType === 'Vimeo' && video.videoUrl) {
+  if (video.videoType === "Vimeo" && video.videoUrl) {
     const id = extractVimeoId(formatUrl(video.videoUrl));
     if (!id) return null;
     return (
       <iframe
+        title={video.title || "Property video tour"}
         src={`https://player.vimeo.com/video/${id}?autoplay=1`}
         className="w-full h-full"
         allow="autoplay; fullscreen; picture-in-picture"
@@ -92,15 +99,11 @@ function VideoEmbed({ video }: { video: Video }) {
     );
   }
 
-  if (video.videoType === 'Upload' && video.videoFileUrl) {
+  if (video.videoType === "Upload" && video.videoFileUrl) {
     return (
-      <video
-        ref={videoRef}
-        src={video.videoFileUrl}
-        controls
-        autoPlay
-        className="w-full h-full"
-      />
+      <video ref={videoRef} src={video.videoFileUrl} controls autoPlay className="w-full h-full">
+        <track kind="captions" srcLang="en" label="English captions" />
+      </video>
     );
   }
 
@@ -120,10 +123,10 @@ function VideoModal({ video, onClose }: { video: Video; onClose: () => void }) {
   // Escape key
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') handleClose();
+      if (e.key === "Escape") handleClose();
     };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
   }, [handleClose]);
 
   // Click outside
@@ -132,6 +135,7 @@ function VideoModal({ video, onClose }: { video: Video; onClose: () => void }) {
   };
 
   return (
+    // biome-ignore lint/a11y/useKeyWithClickEvents: dialog overlay click-outside; close handled by sibling button + global Escape listener
     <div
       ref={overlayRef}
       onClick={handleOverlayClick}
@@ -141,19 +145,31 @@ function VideoModal({ video, onClose }: { video: Video; onClose: () => void }) {
     >
       {/* Close button */}
       <button
+        type="button"
         onClick={handleClose}
         className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center bg-black/60 hover:bg-black/80 text-white rounded-full transition-colors"
         aria-label="Close video"
       >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        <svg
+          aria-hidden="true"
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M6 18L18 6M6 6l12 12"
+          />
         </svg>
       </button>
 
       {/* Video container */}
       <div
         className="relative w-full max-w-3xl aspect-video bg-black rounded-lg overflow-hidden"
-        style={{ maxHeight: '80vh' }}
+        style={{ maxHeight: "80vh" }}
       >
         <VideoEmbed video={video} />
       </div>
@@ -171,14 +187,14 @@ function VideoModal({ video, onClose }: { video: Video; onClose: () => void }) {
 // ─── Thumbnail ──────────────────────────────────────────────────────────────────
 
 function VideoThumbnail({ video, onClick }: { video: Video; onClick: () => void }) {
-  const [thumbUrl, setThumbUrl] = useState<string>('');
+  const [thumbUrl, setThumbUrl] = useState<string>("");
 
   useEffect(() => {
     if (video.thumbnail?.asset?.url) {
       setThumbUrl(video.thumbnail.asset.url);
-    } else if (video.videoType === 'YouTube' && video.videoUrl) {
+    } else if (video.videoType === "YouTube" && video.videoUrl) {
       setThumbUrl(getYouTubeThumbnail(video.videoUrl));
-    } else if (video.videoType === 'Vimeo' && video.videoUrl) {
+    } else if (video.videoType === "Vimeo" && video.videoUrl) {
       getVimeoThumbnail(video.videoUrl, setThumbUrl);
     }
   }, [video]);
@@ -186,7 +202,12 @@ function VideoThumbnail({ video, onClick }: { video: Video; onClick: () => void 
   const playIcon = (
     <div className="absolute inset-0 flex items-center justify-center">
       <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
-        <svg className="w-5 h-5 text-gray-800 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+        <svg
+          aria-hidden="true"
+          className="w-5 h-5 text-gray-800 ml-0.5"
+          fill="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path d="M8 5v14l11-7z" />
         </svg>
       </div>
@@ -202,27 +223,36 @@ function VideoThumbnail({ video, onClick }: { video: Video; onClick: () => void 
       {/* Thumbnail — 16:9 full width */}
       <div
         className="relative overflow-hidden bg-gray-800"
-        style={{ width: '100%', paddingBottom: '56.25%' }}
+        style={{ width: "100%", paddingBottom: "56.25%" }}
       >
         {thumbUrl ? (
           <img
             src={`${thumbUrl}?w=1200&h=675&fit=crop&auto=format`}
-            alt={video.title || 'Video thumbnail'}
+            alt={video.title || "Video thumbnail"}
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-700">
-            <svg className="w-12 h-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            <svg
+              aria-hidden="true"
+              className="w-12 h-12 text-gray-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+              />
             </svg>
           </div>
         )}
         {playIcon}
       </div>
       {/* Title */}
-      {video.title && (
-        <p className="text-sm text-gray-700 mt-2 truncate">{video.title}</p>
-      )}
+      {video.title && <p className="text-sm text-gray-700 mt-2 truncate">{video.title}</p>}
     </button>
   );
 }
@@ -250,10 +280,7 @@ export default function VideoPlayer({ videos }: Props) {
       </div>
 
       {activeIndex !== null && videos[activeIndex] && (
-        <VideoModal
-          video={videos[activeIndex]}
-          onClose={closeVideo}
-        />
+        <VideoModal video={videos[activeIndex]} onClose={closeVideo} />
       )}
     </>
   );

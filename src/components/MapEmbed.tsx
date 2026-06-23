@@ -1,3 +1,4 @@
+import type { Map as LeafletMap } from "leaflet";
 import { useEffect, useRef } from "react";
 
 interface Props {
@@ -9,13 +10,15 @@ interface Props {
 
 export default function MapEmbed({ lat, lng, title = "Property location", zoom = 15 }: Props) {
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstance = useRef<any>(null);
+  const mapInstance = useRef<LeafletMap | null>(null);
 
   useEffect(() => {
     if (!mapRef.current || mapInstance.current) return;
 
     // Dynamic import Leaflet to avoid SSR issues
     const loadMap = async () => {
+      const el = mapRef.current;
+      if (!el) return;
       const L = await import("leaflet");
 
       // Fix default marker icons (Leaflet/Webpack issue)
@@ -29,7 +32,7 @@ export default function MapEmbed({ lat, lng, title = "Property location", zoom =
         shadowSize: [41, 41],
       });
 
-      const map = L.map(mapRef.current!, {
+      const map = L.map(el, {
         scrollWheelZoom: false,
       }).setView([lat, lng], zoom);
 

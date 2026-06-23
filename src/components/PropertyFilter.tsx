@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 
 interface Property {
   _id: string;
@@ -110,7 +110,7 @@ export default function PropertyFilter({ properties, towns, propertyTypes }: Pro
     if (status) result = result.filter((p) => p.status === status);
     if (town) result = result.filter((p) => p.town === town);
     if (type) result = result.filter((p) => p.propertyType === type);
-    if (minBeds) result = result.filter((p) => (p.bedrooms ?? 0) >= parseInt(minBeds));
+    if (minBeds) result = result.filter((p) => (p.bedrooms ?? 0) >= parseInt(minBeds, 10));
     if (priceRange) {
       const [min, max] = priceRange.split("-").map(Number);
       result = result.filter((p) => p.price >= min && p.price <= max);
@@ -154,41 +154,65 @@ export default function PropertyFilter({ properties, towns, propertyTypes }: Pro
 
         {/* Dropdowns */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          <select value={status} onChange={(e) => setStatus(e.target.value)} className={selectClass}>
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            className={selectClass}
+          >
             {statusOptions.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
             ))}
           </select>
 
           <select value={town} onChange={(e) => setTown(e.target.value)} className={selectClass}>
             <option value="">All Areas</option>
             {towns.map((t) => (
-              <option key={t} value={t}>{t}</option>
+              <option key={t} value={t}>
+                {t}
+              </option>
             ))}
           </select>
 
           <select value={type} onChange={(e) => setType(e.target.value)} className={selectClass}>
             <option value="">All Types</option>
             {propertyTypes.map((t) => (
-              <option key={t} value={t}>{t}</option>
+              <option key={t} value={t}>
+                {t}
+              </option>
             ))}
           </select>
 
-          <select value={minBeds} onChange={(e) => setMinBeds(e.target.value)} className={selectClass}>
+          <select
+            value={minBeds}
+            onChange={(e) => setMinBeds(e.target.value)}
+            className={selectClass}
+          >
             {bedroomOptions.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
             ))}
           </select>
 
-          <select value={priceRange} onChange={(e) => setPriceRange(e.target.value)} className={selectClass}>
+          <select
+            value={priceRange}
+            onChange={(e) => setPriceRange(e.target.value)}
+            className={selectClass}
+          >
             {priceRanges.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
             ))}
           </select>
 
           <select value={sort} onChange={(e) => setSort(e.target.value)} className={selectClass}>
             {sortOptions.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
             ))}
           </select>
         </div>
@@ -229,14 +253,18 @@ export default function PropertyFilter({ properties, towns, propertyTypes }: Pro
                 <p className="text-xl font-bold mb-1" style={{ fontFamily: "var(--font-display)" }}>
                   {formatPrice(property.price, property.priceQualifier)}
                 </p>
-                <h3 className="text-sm font-semibold text-gray-800 mb-1 truncate">{property.title}</h3>
+                <h3 className="text-sm font-semibold text-gray-800 mb-1 truncate">
+                  {property.title}
+                </h3>
                 <p className="text-xs text-gray-500 mb-3">
                   {[property.town, property.postcode].filter(Boolean).join(", ")}
                 </p>
                 <div className="flex gap-4 text-xs text-gray-500 border-t border-gray-100 pt-3">
                   {property.bedrooms != null && <span>{property.bedrooms} bed</span>}
                   {property.bathrooms != null && <span>{property.bathrooms} bath</span>}
-                  {property.sqft != null && <span>{property.sqft.toLocaleString("en-GB")} sq ft</span>}
+                  {property.sqft != null && (
+                    <span>{property.sqft.toLocaleString("en-GB")} sq ft</span>
+                  )}
                 </div>
               </div>
             </a>
@@ -246,6 +274,7 @@ export default function PropertyFilter({ properties, towns, propertyTypes }: Pro
         <div className="text-center py-16">
           <p className="text-gray-500 text-lg">No properties match your filters.</p>
           <button
+            type="button"
             onClick={() => {
               setStatus("");
               setTown("");

@@ -1,4 +1,4 @@
-import { defineType, defineField } from "sanity";
+import { defineField, defineType } from "sanity";
 
 export default defineType({
   name: "agent",
@@ -69,14 +69,7 @@ export default defineType({
               title: "Platform",
               type: "string",
               options: {
-                list: [
-                  "LinkedIn",
-                  "Instagram",
-                  "Facebook",
-                  "Twitter",
-                  "TikTok",
-                  "YouTube",
-                ],
+                list: ["LinkedIn", "Instagram", "Facebook", "Twitter", "TikTok", "YouTube"],
               },
             },
             {
