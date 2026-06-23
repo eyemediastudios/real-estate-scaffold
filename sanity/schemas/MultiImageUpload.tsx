@@ -44,7 +44,7 @@ export default function MultiImageUpload({ value = [], onChange }: Props) {
       try {
         const results = await Promise.all(
           files.map((file) =>
-            (client as any).assets.upload("image", file, {
+            client.assets.upload("image", file, {
               contentType: file.type,
               filename: file.name,
             })
@@ -63,8 +63,8 @@ export default function MultiImageUpload({ value = [], onChange }: Props) {
         const updated = [...(value ?? []), ...newItems];
         onChange(PatchEvent.from([set(updated)]));
         alert(`${newItems.length} image${newItems.length > 1 ? "s" : ""} uploaded`);
-      } catch (err: any) {
-        alert(`Upload failed: ${err.message}`);
+      } catch (err) {
+        alert(`Upload failed: ${err instanceof Error ? err.message : String(err)}`);
       } finally {
         setUploading(false);
         if (fileInputRef.current) fileInputRef.current.value = "";

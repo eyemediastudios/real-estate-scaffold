@@ -110,7 +110,7 @@ export default function PropertyFilter({ properties, towns, propertyTypes }: Pro
     if (status) result = result.filter((p) => p.status === status);
     if (town) result = result.filter((p) => p.town === town);
     if (type) result = result.filter((p) => p.propertyType === type);
-    if (minBeds) result = result.filter((p) => (p.bedrooms ?? 0) >= parseInt(minBeds));
+    if (minBeds) result = result.filter((p) => (p.bedrooms ?? 0) >= parseInt(minBeds, 10));
     if (priceRange) {
       const [min, max] = priceRange.split("-").map(Number);
       result = result.filter((p) => p.price >= min && p.price <= max);

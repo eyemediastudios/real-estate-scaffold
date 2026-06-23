@@ -1,4 +1,4 @@
-import { defineField, defineType } from "sanity";
+import { defineField, defineType, type Rule } from "sanity";
 import MultiImageUpload from "./MultiImageUpload";
 
 export default defineType({
@@ -256,7 +256,7 @@ export default defineType({
               title: "Label",
               type: "string",
               description: "e.g. Ground Floor, First Floor, Second Floor",
-              validation: (r: any) => r.required(),
+              validation: (r: Rule) => r.required(),
             },
             {
               name: "image",
@@ -294,7 +294,7 @@ export default defineType({
               name: "title",
               title: "Title",
               type: "string",
-              validation: (r: any) => r.required(),
+              validation: (r: Rule) => r.required(),
             },
             {
               name: "videoType",
@@ -307,14 +307,14 @@ export default defineType({
                   { title: "Upload", value: "Upload" },
                 ],
               },
-              validation: (r: any) => r.required(),
+              validation: (r: Rule) => r.required(),
             },
             {
               name: "videoUrl",
               title: "Video URL",
               type: "url",
               description: "YouTube or Vimeo link",
-              hidden: ({ parent }: any) =>
+              hidden: ({ parent }: { parent?: { videoType?: string } }) =>
                 parent?.videoType !== "YouTube" && parent?.videoType !== "Vimeo",
             },
             {
@@ -323,7 +323,8 @@ export default defineType({
               type: "file",
               options: { accept: "video/mp4,video/webm" },
               description: "Direct upload for self-hosted video",
-              hidden: ({ parent }: any) => parent?.videoType !== "Upload",
+              hidden: ({ parent }: { parent?: { videoType?: string } }) =>
+                parent?.videoType !== "Upload",
             },
             {
               name: "thumbnail",
@@ -331,7 +332,8 @@ export default defineType({
               type: "image",
               options: { hotspot: true },
               description: "Custom thumbnail — auto-generated from YouTube/Vimeo if left blank",
-              hidden: ({ parent }: any) => parent?.videoType === "Upload",
+              hidden: ({ parent }: { parent?: { videoType?: string } }) =>
+                parent?.videoType === "Upload",
             },
           ],
         },

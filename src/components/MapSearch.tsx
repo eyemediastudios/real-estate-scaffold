@@ -1,3 +1,4 @@
+import type { Map as LeafletMap, Marker as LeafletMarker } from "leaflet";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 // ── Types ──
@@ -56,6 +57,9 @@ function statusDot(s: string): string {
   if (s === "under-offer" || s === "let-agreed") return "#d97706";
   return "#dc2626";
 }
+
+// ── Marker popup close-timer tracking ──
+const closeTimers = new WeakMap<LeafletMarker, ReturnType<typeof setTimeout> | null>();
 
 // ── Price range presets ──
 const PRICE_RANGES = [
@@ -118,10 +122,10 @@ export default function MapSearch({
 
   // ── Refs ──
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstance = useRef<any>(null);
-  const markersRef = useRef<Map<string, any>>(new Map());
+  const mapInstance = useRef<LeafletMap | null>(null);
+  const markersRef = useRef<Map<string, LeafletMarker>>(new Map());
   const listRefs = useRef<Map<string, HTMLElement>>(new Map());
-  const LRef = useRef<any>(null);
+  const LRef = useRef<typeof import("leaflet") | null>(null);
 
   // ── Filtered + sorted ──
   const filtered = useMemo(() => {
@@ -139,7 +143,7 @@ export default function MapSearch({
     if (status) result = result.filter((p) => p.status === status);
     if (town) result = result.filter((p) => p.town === town);
     if (type) result = result.filter((p) => p.propertyType === type);
-    if (minBeds) result = result.filter((p) => (p.bedrooms ?? 0) >= parseInt(minBeds));
+    if (minBeds) result = result.filter((p) => (p.bedrooms ?? 0) >= parseInt(minBeds, 10));
     if (priceRange) {
       const [min, max] = priceRange.split("-").map(Number);
       result = result.filter((p) => p.price >= min && p.price <= max);
@@ -165,11 +169,13 @@ export default function MapSearch({
     if (!mapRef.current || mapInstance.current) return;
 
     const initMap = async () => {
+      const el = mapRef.current;
+      if (!el) return;
       try {
         const L = await import("leaflet");
         LRef.current = L;
 
-        const map = L.map(mapRef.current!, {
+        const map = L.map(el, {
           scrollWheelZoom: false,
           zoomControl: true,
         }).setView([mapCenter.lat, mapCenter.lng], mapZoom);
@@ -202,7 +208,7 @@ export default function MapSearch({
 
   // ── Create custom marker icon ──
   const createIcon = useCallback(
-    (price: number, qualifier: string | undefined, isHovered: boolean, isSelected: boolean) => {
+    (price: number, _qualifier: string | undefined, isHovered: boolean, isSelected: boolean) => {
       const L = LRef.current;
       if (!L) return null;
 
@@ -311,15 +317,19 @@ export default function MapSearch({
         if (!content) return;
 
         content.addEventListener("mouseenter", () => {
-          if (marker._closeTimer) {
-            clearTimeout(marker._closeTimer);
-            marker._closeTimer = null;
+          const timer = closeTimers.get(marker);
+          if (timer) {
+            clearTimeout(timer);
+            closeTimers.set(marker, null);
           }
         });
         content.addEventListener("mouseleave", () => {
-          marker._closeTimer = setTimeout(() => {
-            marker.closePopup();
-          }, 400);
+          closeTimers.set(
+            marker,
+            setTimeout(() => {
+              marker.closePopup();
+            }, 400)
+          );
         });
       });
 
@@ -423,7 +433,13 @@ export default function MapSearch({
                   : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
               }`}
             >
-              <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                aria-hidden="true"
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -516,7 +532,11 @@ export default function MapSearch({
             {filtered.length} {filtered.length === 1 ? "property" : "properties"}
           </span>
           {selectedId && (
-            <button type="button" onClick={() => setSelectedId(null)} className="text-blue-600 hover:underline">
+            <button
+              type="button"
+              onClick={() => setSelectedId(null)}
+              className="text-blue-600 hover:underline"
+            >
               Clear selection
             </button>
           )}

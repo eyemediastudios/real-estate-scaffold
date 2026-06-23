@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { useState } from "react";
+import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 interface Props {
   propertyPrice: number;
@@ -77,19 +77,9 @@ export default function MortgageCalculator({ propertyPrice }: Props) {
   const totalInterest = totalPayable - principal;
 
   const chartData = [
-    { name: "Principal", value: Math.round(principal) },
-    { name: "Interest", value: Math.round(totalInterest) },
+    { name: "Principal", value: Math.round(principal), fill: COLOURS[0] },
+    { name: "Interest", value: Math.round(totalInterest), fill: COLOURS[1] },
   ];
-
-  // Sync deposit amount when toggling to/from percent mode
-  const handleTogglePercent = (checked: boolean) => {
-    setUseDepositPercent(checked);
-    if (checked) {
-      // switch to % — keep depositAmount consistent
-    } else {
-      // switch to £ — keep amount consistent
-    }
-  };
 
   const handleDepositAmountChange = (val: number) => {
     const clamped = Math.min(val, propertyPrice);
@@ -232,11 +222,7 @@ export default function MortgageCalculator({ propertyPrice }: Props) {
                 outerRadius={50}
                 paddingAngle={3}
                 dataKey="value"
-              >
-                {chartData.map((_, i) => (
-                  <Cell key={i} fill={COLOURS[i]} />
-                ))}
-              </Pie>
+              />
               <Tooltip
                 formatter={(v) => (v == null ? "" : formatCurrency(v as number))}
                 contentStyle={{ fontSize: 12, borderRadius: 6, border: "1px solid #e5e7eb" }}

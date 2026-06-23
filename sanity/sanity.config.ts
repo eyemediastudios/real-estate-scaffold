@@ -1,6 +1,6 @@
 import { visionTool } from "@sanity/vision";
 import { defineConfig } from "sanity";
-import { StructureBuilder, structureTool } from "sanity/structure";
+import { structureTool } from "sanity/structure";
 import { schemaTypes } from "./schemas";
 
 const singletons = ["siteSettings"];
