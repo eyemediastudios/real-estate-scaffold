@@ -9,7 +9,6 @@ interface Props {
 }
 
 const { title, description, ogImage, canonical, jsonLd, noindex = false } = Astro.props;
-const siteUrl = Astro.url.origin;
 const currentUrl = canonical || Astro.url.href;
 ---
 
@@ -34,5 +33,5 @@ const currentUrl = canonical || Astro.url.href;
 
 <!-- JSON-LD Structured Data -->
 {jsonLd && (
-  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 )}

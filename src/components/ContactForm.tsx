@@ -17,7 +17,7 @@ export default function ContactForm({ propertyTitle, branchEmail, formEndpoint }
   });
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setStatus("sending");
 
