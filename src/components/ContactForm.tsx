@@ -69,8 +69,9 @@ export default function ContactForm({ propertyTitle, branchEmail, formEndpoint }
     <div onSubmit={handleSubmit}>
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+          <label htmlFor="contact-name" className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
           <input
+            id="contact-name"
             type="text"
             required
             value={formData.name}
@@ -82,8 +83,9 @@ export default function ContactForm({ propertyTitle, branchEmail, formEndpoint }
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+            <label htmlFor="contact-email" className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
             <input
+              id="contact-email"
               type="email"
               required
               value={formData.email}
@@ -93,8 +95,9 @@ export default function ContactForm({ propertyTitle, branchEmail, formEndpoint }
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+            <label htmlFor="contact-phone" className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
             <input
+              id="contact-phone"
               type="tel"
               value={formData.phone}
               onChange={(e) => setFormData((d) => ({ ...d, phone: e.target.value }))}
@@ -105,8 +108,9 @@ export default function ContactForm({ propertyTitle, branchEmail, formEndpoint }
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Message *</label>
+          <label htmlFor="contact-message" className="block text-sm font-medium text-gray-700 mb-1">Message *</label>
           <textarea
+            id="contact-message"
             required
             rows={4}
             value={formData.message}

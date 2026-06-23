@@ -95,7 +95,7 @@ function PropertyCard({ p }: { p: Property }) {
         <div className="flex items-center gap-4 text-xs text-gray-500 border-t border-gray-100 pt-3">
           {p.bedrooms != null && (
             <span className="flex items-center gap-1">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -108,7 +108,7 @@ function PropertyCard({ p }: { p: Property }) {
           )}
           {p.bathrooms != null && (
             <span className="flex items-center gap-1">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"

@@ -274,6 +274,7 @@ export default function PropertyFilter({ properties, towns, propertyTypes }: Pro
         <div className="text-center py-16">
           <p className="text-gray-500 text-lg">No properties match your filters.</p>
           <button
+            type="button"
             onClick={() => {
               setStatus("");
               setTown("");
