@@ -4,10 +4,15 @@
  */
 const { createClient } = require('@sanity/client');
 
+const token = process.env.SANITY_TOKEN;
+if (!token) {
+  throw new Error('SANITY_TOKEN environment variable is required. Set it in .env or your shell environment.');
+}
+
 const client = createClient({
-  projectId: '3g6sb7og',
+  projectId: process.env.SANITY_PROJECT_ID || 'itpavex8',
   dataset: 'production',
-  token: process.env.SANITY_TOKEN || 'sk3oOs5QxMESwU1JnrJI15iEQLmJzfNGMVaSnmOsbiGfsg7mcpBb9WpSDRYcOoRUdNHVKgV9wMT8yElG8DveWbjOE2KJIMtgmBoYH39A25Q0lrdMY4rsNCAl7bkMh50cTzICEVOsTSvxwuV1HjBMo3T9CkOW4zrfEw8JEAFmfJuxCs7b5Fma',
+  token,
   apiVersion: '2024-01-01',
   useCdn: false,
 });

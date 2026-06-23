@@ -213,7 +213,7 @@ export default function PropertyFilter({ properties, towns, propertyTypes }: Pro
                   src={
                     property.thumbnail?.asset?.url
                       ? `${property.thumbnail.asset.url}?w=600&h=400&fit=crop&auto=format`
-                      : "/placeholder-property.jpg"
+                      : "/floorplan-placeholder.svg"
                   }
                   alt={property.thumbnail?.alt || property.title}
                   loading="lazy"

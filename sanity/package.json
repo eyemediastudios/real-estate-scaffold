@@ -1,5 +1,5 @@
 {
-  "name": "wiseman-properties",
+  "name": "real-estate-scaffold-studio",
   "private": true,
   "version": "1.0.0",
   "main": "package.json",
@@ -10,6 +10,9 @@
     "deploy-graphql": "sanity graphql deploy",
     "dev": "sanity dev",
     "start": "sanity start"
+  },
+  "engines": {
+    "node": ">=24"
   },
   "keywords": [
     "sanity"

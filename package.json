@@ -6,7 +6,13 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "typecheck": "tsc --noEmit",
+    "check": "astro check",
+    "check:all": "npm run typecheck && npm run check"
+  },
+  "engines": {
+    "node": ">=24"
   },
   "dependencies": {
     "@astrojs/react": "^4.2.0",
@@ -24,10 +30,10 @@
     "tailwindcss": "^4.0.0"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.9",
     "@types/leaflet": "^1.9.12",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "glob": "^11.1.0",
     "typescript": "^5.7.0"
   }
 }

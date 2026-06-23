@@ -230,7 +230,7 @@ export default function MortgageCalculator({ propertyPrice }: Props) {
                 ))}
               </Pie>
               <Tooltip
-                formatter={(v: number) => formatCurrency(v)}
+                formatter={(v) => v == null ? '' : formatCurrency(v as number)}
                 contentStyle={{ fontSize: 12, borderRadius: 6, border: '1px solid #e5e7eb' }}
               />
             </PieChart>

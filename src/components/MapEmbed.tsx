@@ -43,14 +43,6 @@ export default function MapEmbed({ lat, lng, title = "Property location", zoom =
       mapInstance.current = map;
     };
 
-    // Inject Leaflet CSS
-    if (!document.querySelector('link[href*="leaflet"]')) {
-      const link = document.createElement("link");
-      link.rel = "stylesheet";
-      link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
-      document.head.appendChild(link);
-    }
-
     loadMap();
 
     return () => {
