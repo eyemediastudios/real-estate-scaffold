@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useMemo } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { useMemo, useState } from "react";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 interface Props {
   propertyPrice: number;
@@ -10,7 +10,7 @@ interface Props {
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
 function formatCurrency(n: number): string {
-  return `£${n.toLocaleString('en-GB', { maximumFractionDigits: 0 })}`;
+  return `£${n.toLocaleString("en-GB", { maximumFractionDigits: 0 })}`;
 }
 
 // Monthly payment: M = P[r(1+r)^n]/[(1+r)^n – 1]
@@ -18,12 +18,12 @@ function calcMonthly(principal: number, annualRate: number, years: number): numb
   const r = annualRate / 100 / 12;
   const n = years * 12;
   if (r === 0) return principal / n;
-  return (principal * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+  return (principal * r * (1 + r) ** n) / ((1 + r) ** n - 1);
 }
 
 // ─── Donut chart colours ───────────────────────────────────────────────────────
 
-const COLOURS = ['#1a3a5c', '#f59e0b']; // brand + amber
+const COLOURS = ["#1a3a5c", "#f59e0b"]; // brand + amber
 
 // ─── Section ──────────────────────────────────────────────────────────────────
 
@@ -37,12 +37,17 @@ function CollapsibleSection({ title, children }: { title: string; children: Reac
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-50 transition-colors"
       >
-        <span className="text-sm font-bold" style={{ fontFamily: 'var(--font-display, Georgia, serif)' }}>
+        <span
+          className="text-sm font-bold"
+          style={{ fontFamily: "var(--font-display, Georgia, serif)" }}
+        >
           {title}
         </span>
         <svg
-          className={`w-4 h-4 text-gray-500 flex-shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
-          fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          className={`w-4 h-4 text-gray-500 flex-shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
@@ -62,7 +67,7 @@ export default function MortgageCalculator({ propertyPrice }: Props) {
   const [termYears, setTermYears] = useState(25);
 
   const effectiveDeposit = useDepositPercent
-    ? Math.round(propertyPrice * depositPercent / 100)
+    ? Math.round((propertyPrice * depositPercent) / 100)
     : depositAmount;
 
   const principal = Math.max(propertyPrice - effectiveDeposit, 0);
@@ -71,8 +76,8 @@ export default function MortgageCalculator({ propertyPrice }: Props) {
   const totalInterest = totalPayable - principal;
 
   const chartData = [
-    { name: 'Principal', value: Math.round(principal) },
-    { name: 'Interest', value: Math.round(totalInterest) },
+    { name: "Principal", value: Math.round(principal) },
+    { name: "Interest", value: Math.round(totalInterest) },
   ];
 
   // Sync deposit amount when toggling to/from percent mode
@@ -95,7 +100,7 @@ export default function MortgageCalculator({ propertyPrice }: Props) {
 
   const handleDepositPercentChange = (pct: number) => {
     setDepositPercent(pct);
-    setDepositAmount(Math.round(propertyPrice * pct / 100));
+    setDepositAmount(Math.round((propertyPrice * pct) / 100));
   };
 
   return (
@@ -132,7 +137,7 @@ export default function MortgageCalculator({ propertyPrice }: Props) {
             />
             <div className="flex items-center justify-between">
               <span className="text-xs text-gray-400">5%</span>
-              <span className="text-sm font-bold" style={{ color: 'var(--color-brand,#1a3a5c)' }}>
+              <span className="text-sm font-bold" style={{ color: "var(--color-brand,#1a3a5c)" }}>
                 {depositPercent}% — {formatCurrency(effectiveDeposit)}
               </span>
               <span className="text-xs text-gray-400">75%</span>
@@ -141,7 +146,9 @@ export default function MortgageCalculator({ propertyPrice }: Props) {
         ) : (
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">£</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+                £
+              </span>
               <input
                 type="number"
                 value={depositAmount}
@@ -169,7 +176,7 @@ export default function MortgageCalculator({ propertyPrice }: Props) {
       <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
           <label className="text-xs font-medium text-gray-600">Interest Rate (%)</label>
-          <span className="text-sm font-bold" style={{ color: 'var(--color-brand,#1a3a5c)' }}>
+          <span className="text-sm font-bold" style={{ color: "var(--color-brand,#1a3a5c)" }}>
             {interestRate.toFixed(1)}%
           </span>
         </div>
@@ -192,7 +199,7 @@ export default function MortgageCalculator({ propertyPrice }: Props) {
       <div className="mb-5">
         <div className="flex items-center justify-between mb-2">
           <label className="text-xs font-medium text-gray-600">Term (Years)</label>
-          <span className="text-sm font-bold" style={{ color: 'var(--color-brand,#1a3a5c)' }}>
+          <span className="text-sm font-bold" style={{ color: "var(--color-brand,#1a3a5c)" }}>
             {termYears} yrs
           </span>
         </div>
@@ -230,8 +237,8 @@ export default function MortgageCalculator({ propertyPrice }: Props) {
                 ))}
               </Pie>
               <Tooltip
-                formatter={(v) => v == null ? '' : formatCurrency(v as number)}
-                contentStyle={{ fontSize: 12, borderRadius: 6, border: '1px solid #e5e7eb' }}
+                formatter={(v) => (v == null ? "" : formatCurrency(v as number))}
+                contentStyle={{ fontSize: 12, borderRadius: 6, border: "1px solid #e5e7eb" }}
               />
             </PieChart>
           </ResponsiveContainer>
@@ -254,17 +261,27 @@ export default function MortgageCalculator({ propertyPrice }: Props) {
       <div className="grid grid-cols-1 gap-2 mb-5">
         <div className="flex items-center justify-between py-2 border-b border-gray-100">
           <span className="text-sm text-gray-500">Monthly payment</span>
-          <span className="text-lg font-bold" style={{ color: 'var(--color-brand,#1a3a5c)', fontFamily: 'var(--font-display,Georgia,serif)' }}>
+          <span
+            className="text-lg font-bold"
+            style={{
+              color: "var(--color-brand,#1a3a5c)",
+              fontFamily: "var(--font-display,Georgia,serif)",
+            }}
+          >
             {formatCurrency(Math.round(monthly))}
           </span>
         </div>
         <div className="flex items-center justify-between py-2 border-b border-gray-100">
           <span className="text-xs text-gray-500">Total payable</span>
-          <span className="text-sm font-semibold text-gray-700">{formatCurrency(Math.round(totalPayable))}</span>
+          <span className="text-sm font-semibold text-gray-700">
+            {formatCurrency(Math.round(totalPayable))}
+          </span>
         </div>
         <div className="flex items-center justify-between py-2">
           <span className="text-xs text-gray-500">Total interest</span>
-          <span className="text-sm font-semibold text-amber-600">{formatCurrency(Math.round(totalInterest))}</span>
+          <span className="text-sm font-semibold text-amber-600">
+            {formatCurrency(Math.round(totalInterest))}
+          </span>
         </div>
       </div>
 
@@ -272,7 +289,7 @@ export default function MortgageCalculator({ propertyPrice }: Props) {
       <a
         href="/contact"
         className="block w-full text-center py-2.5 rounded-lg text-white text-sm font-semibold transition-opacity hover:opacity-90"
-        style={{ background: 'var(--color-brand,#1a3a5c)' }}
+        style={{ background: "var(--color-brand,#1a3a5c)" }}
       >
         Speak to a mortgage adviser
       </a>

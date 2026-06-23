@@ -35,7 +35,8 @@ export function statusLabel(status: string): string {
 export function statusColour(status: string): string {
   if (status === "for-sale" || status === "for-rent") return "bg-green-600 text-white";
   if (status === "under-offer" || status === "let-agreed") return "bg-amber-500 text-white";
-  if (status === "sold" || status === "sold-stc" || status === "let") return "bg-red-600 text-white";
+  if (status === "sold" || status === "sold-stc" || status === "let")
+    return "bg-red-600 text-white";
   return "bg-gray-500 text-white";
 }
 
@@ -83,7 +84,13 @@ export function fullAddress(property: {
   county?: string;
   postcode?: string;
 }): string {
-  return [property.addressLine1, property.addressLine2, property.town, property.county, property.postcode]
+  return [
+    property.addressLine1,
+    property.addressLine2,
+    property.town,
+    property.county,
+    property.postcode,
+  ]
     .filter(Boolean)
     .join(", ");
 }

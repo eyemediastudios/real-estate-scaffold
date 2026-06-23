@@ -6,11 +6,7 @@ interface Props {
   formEndpoint?: string;
 }
 
-export default function ContactForm({
-  propertyTitle,
-  branchEmail,
-  formEndpoint,
-}: Props) {
+export default function ContactForm({ propertyTitle, branchEmail, formEndpoint }: Props) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -29,9 +25,7 @@ export default function ContactForm({
       const endpoint = formEndpoint || import.meta.env?.PUBLIC_FORM_ENDPOINT;
       if (!endpoint) {
         // Fallback: mailto link
-        const subject = propertyTitle
-          ? `Enquiry about ${propertyTitle}`
-          : "Website Enquiry";
+        const subject = propertyTitle ? `Enquiry about ${propertyTitle}` : "Website Enquiry";
         const body = `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\n\n${formData.message}`;
         const mailto = branchEmail || "info@example.com";
         window.location.href = `mailto:${mailto}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
@@ -123,7 +117,9 @@ export default function ContactForm({
         </div>
 
         {status === "error" && (
-          <p className="text-red-600 text-sm">Something went wrong. Please try again or call us directly.</p>
+          <p className="text-red-600 text-sm">
+            Something went wrong. Please try again or call us directly.
+          </p>
         )}
 
         <button

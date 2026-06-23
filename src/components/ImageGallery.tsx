@@ -1,7 +1,10 @@
-import { useState, useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 interface GalleryImage {
-  asset: { url: string; metadata?: { dimensions?: { width: number; height: number }; lqip?: string } };
+  asset: {
+    url: string;
+    metadata?: { dimensions?: { width: number; height: number }; lqip?: string };
+  };
   alt?: string;
   caption?: string;
 }
@@ -102,18 +105,31 @@ export default function ImageGallery({ images, title }: Props) {
             aria-label="Close"
           >
             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
 
           {/* Previous */}
           <button
-            onClick={(e) => { e.stopPropagation(); prev(); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              prev();
+            }}
             className="absolute left-4 text-white/80 hover:text-white p-2 z-10"
             aria-label="Previous image"
           >
             <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </button>
 
@@ -133,7 +149,10 @@ export default function ImageGallery({ images, title }: Props) {
 
           {/* Next */}
           <button
-            onClick={(e) => { e.stopPropagation(); next(); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              next();
+            }}
             className="absolute right-4 text-white/80 hover:text-white p-2 z-10"
             aria-label="Next image"
           >

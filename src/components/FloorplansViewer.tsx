@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from "react";
 
 interface Floorplan {
   _key?: string;
@@ -35,12 +35,12 @@ function FloorplanLightbox({
   // Escape key
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowLeft') onPrev();
-      if (e.key === 'ArrowRight') onNext();
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowLeft") onPrev();
+      if (e.key === "ArrowRight") onNext();
     };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
   }, [onClose, onPrev, onNext]);
 
   return (
@@ -51,7 +51,8 @@ function FloorplanLightbox({
       {/* Header */}
       <div className="w-full max-w-5xl flex items-center justify-between mb-4">
         <p className="text-white/80 text-sm font-medium">
-          {current.label || `Floor Plan ${currentIndex + 1}`} — {currentIndex + 1} of {floorplans.length}
+          {current.label || `Floor Plan ${currentIndex + 1}`} — {currentIndex + 1} of{" "}
+          {floorplans.length}
         </p>
         <button
           onClick={onClose}
@@ -59,7 +60,12 @@ function FloorplanLightbox({
           aria-label="Close"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
@@ -71,9 +77,9 @@ function FloorplanLightbox({
       >
         <img
           src={`${current.image.asset.url}?w=1400&auto=format`}
-          alt={current.label || 'Floor plan'}
+          alt={current.label || "Floor plan"}
           className="max-w-full max-h-[80vh] object-contain rounded-lg"
-          style={{ maxHeight: '80vh' }}
+          style={{ maxHeight: "80vh" }}
         />
 
         {/* Prev */}
@@ -84,7 +90,12 @@ function FloorplanLightbox({
             aria-label="Previous floor plan"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </button>
         )}
@@ -105,13 +116,18 @@ function FloorplanLightbox({
 
       {/* Thumbnail strip */}
       {floorplans.length > 1 && (
-        <div className="flex gap-2 mt-4 overflow-x-auto pb-1" style={{ maxWidth: '100%' }}>
+        <div className="flex gap-2 mt-4 overflow-x-auto pb-1" style={{ maxWidth: "100%" }}>
           {floorplans.map((fp, i) => (
             <button
               key={fp._key || i}
-              onClick={(e) => { e.stopPropagation(); onGoTo(i); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onGoTo(i);
+              }}
               className={`flex-shrink-0 w-16 h-12 rounded overflow-hidden border-2 transition-colors ${
-                i === currentIndex ? 'border-white' : 'border-transparent opacity-60 hover:opacity-100'
+                i === currentIndex
+                  ? "border-white"
+                  : "border-transparent opacity-60 hover:opacity-100"
               }`}
             >
               {fp.image?.asset?.url ? (
@@ -154,20 +170,20 @@ export default function FloorplansViewer({ floorplans }: Props) {
 
   const currentUrl = current?.image?.asset?.url
     ? `${current.image.asset.url}?w=1200&auto=format`
-    : '';
+    : "";
 
   return (
     <>
       {/* Filmstrip thumbnails */}
-      <div className="flex gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: 'thin' }}>
+      <div className="flex gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: "thin" }}>
         {floorplans.map((fp, i) => (
           <button
             key={fp._key || i}
             onClick={() => setCurrentIndex(i)}
             className={`flex-shrink-0 flex flex-col items-center gap-1 rounded-lg overflow-hidden border-2 transition-all ${
               i === currentIndex
-                ? 'border-[var(--color-brand,#1a3a5c)]'
-                : 'border-gray-200 hover:border-gray-400'
+                ? "border-[var(--color-brand,#1a3a5c)]"
+                : "border-gray-200 hover:border-gray-400"
             }`}
           >
             {fp.image?.asset?.url ? (
@@ -178,14 +194,28 @@ export default function FloorplansViewer({ floorplans }: Props) {
               />
             ) : (
               <div className="w-20 h-16 bg-gray-100 flex items-center justify-center">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                <svg
+                  className="w-5 h-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                  />
                 </svg>
               </div>
             )}
-            <span className={`text-xs px-1 pb-1 truncate max-w-[80px] ${
-              i === currentIndex ? 'text-[var(--color-brand,#1a3a5c)] font-semibold' : 'text-gray-500'
-            }`}>
+            <span
+              className={`text-xs px-1 pb-1 truncate max-w-[80px] ${
+                i === currentIndex
+                  ? "text-[var(--color-brand,#1a3a5c)] font-semibold"
+                  : "text-gray-500"
+              }`}
+            >
               {fp.label || `Floor ${i + 1}`}
             </span>
           </button>
@@ -197,9 +227,9 @@ export default function FloorplansViewer({ floorplans }: Props) {
         <div className="relative mt-4 rounded-xl overflow-hidden bg-gray-50 border border-gray-200 group cursor-zoom-in">
           <img
             src={currentUrl}
-            alt={current.label || 'Floor plan'}
+            alt={current.label || "Floor plan"}
             className="w-full h-auto object-contain"
-            style={{ maxHeight: '500px' }}
+            style={{ maxHeight: "500px" }}
             onClick={openLightbox}
           />
 
@@ -207,7 +237,12 @@ export default function FloorplansViewer({ floorplans }: Props) {
           <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
             <span className="bg-black/60 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
+                />
               </svg>
               Click to enlarge
             </span>
@@ -218,23 +253,39 @@ export default function FloorplansViewer({ floorplans }: Props) {
             <>
               {currentIndex > 0 && (
                 <button
-                  onClick={(e) => { e.stopPropagation(); goPrev(); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goPrev();
+                  }}
                   className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white/80 hover:bg-white text-gray-800 rounded-full shadow transition-colors opacity-0 group-hover:opacity-100"
                   aria-label="Previous"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 19l-7-7 7-7"
+                    />
                   </svg>
                 </button>
               )}
               {currentIndex < floorplans.length - 1 && (
                 <button
-                  onClick={(e) => { e.stopPropagation(); goNext(); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goNext();
+                  }}
                   className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white/80 hover:bg-white text-gray-800 rounded-full shadow transition-colors opacity-0 group-hover:opacity-100"
                   aria-label="Next"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </button>
               )}
