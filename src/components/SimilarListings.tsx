@@ -53,7 +53,7 @@ function statusLabel(s: string): string {
 function PropertyCard({ p }: { p: Property }) {
   const imageUrl = p.thumbnail?.asset?.url
     ? `${p.thumbnail.asset.url}?w=600&h=400&fit=crop&auto=format`
-    : '/placeholder-property.jpg';
+    : '/floorplan-placeholder.svg';
 
   return (
     <a
