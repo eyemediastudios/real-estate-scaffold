@@ -165,6 +165,7 @@ export default function MapSearch({
   }, [properties, status, town, type, minBeds, priceRange, sort, search]);
 
   // ── Init Leaflet ──
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentional one-time init; view changes handled by the sync effect below
   useEffect(() => {
     if (!mapRef.current || mapInstance.current) return;
 
@@ -205,6 +206,12 @@ export default function MapSearch({
       }
     };
   }, []);
+
+  // ── Sync view with mapCenter/mapZoom props ──
+  useEffect(() => {
+    if (!mapInstance.current) return;
+    mapInstance.current.setView([mapCenter.lat, mapCenter.lng], mapZoom);
+  }, [mapCenter.lat, mapCenter.lng, mapZoom]);
 
   // ── Create custom marker icon ──
   const createIcon = useCallback(
@@ -254,7 +261,9 @@ export default function MapSearch({
     const map = mapInstance.current;
 
     // Remove old markers
-    markersRef.current.forEach((marker) => map.removeLayer(marker));
+    for (const marker of markersRef.current.values()) {
+      map.removeLayer(marker);
+    }
     markersRef.current.clear();
 
     // Add new markers
@@ -340,7 +349,7 @@ export default function MapSearch({
     if (bounds.length > 0) {
       map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
     }
-  }, [filtered, mapReady]);
+  }, [filtered, mapReady, createIcon]);
 
   // ── Update individual marker icons on hover/select change ──
   useEffect(() => {
@@ -353,7 +362,7 @@ export default function MapSearch({
       if (icon) marker.setIcon(icon);
       marker.setZIndexOffset(id === selectedId ? 1000 : id === hoveredId ? 999 : 0);
     });
-  }, [hoveredId, selectedId, filtered, mapReady]);
+  }, [hoveredId, selectedId, filtered, mapReady, createIcon]);
 
   // ── Sidebar card hover → pan map ──
   const handleCardHover = useCallback((id: string | null) => {

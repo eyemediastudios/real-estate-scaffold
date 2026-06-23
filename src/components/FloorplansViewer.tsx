@@ -29,11 +29,10 @@ function FloorplanLightbox({
   onNext: () => void;
   onGoTo: (i: number) => void;
 }) {
-  const current = floorplans[currentIndex];
-  if (!current?.image?.asset?.url) return null;
-
   // Escape key
   useEffect(() => {
+    const current = floorplans[currentIndex];
+    if (!current?.image?.asset?.url) return;
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
       if (e.key === "ArrowLeft") onPrev();
@@ -41,7 +40,10 @@ function FloorplanLightbox({
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [onClose, onPrev, onNext]);
+  }, [onClose, onPrev, onNext, currentIndex, floorplans]);
+
+  const current = floorplans[currentIndex];
+  if (!current?.image?.asset?.url) return null;
 
   return (
     <div

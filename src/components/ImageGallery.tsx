@@ -18,7 +18,7 @@ export default function ImageGallery({ images, title }: Props) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const openLightbox = (i: number) => setLightboxIndex(i);
-  const closeLightbox = () => setLightboxIndex(null);
+  const closeLightbox = useCallback(() => setLightboxIndex(null), []);
 
   const prev = useCallback(() => {
     if (lightboxIndex === null) return;
@@ -40,7 +40,7 @@ export default function ImageGallery({ images, title }: Props) {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [lightboxIndex, prev, next]);
+  }, [lightboxIndex, prev, next, closeLightbox]);
 
   if (!images?.length) return null;
 
@@ -69,7 +69,7 @@ export default function ImageGallery({ images, title }: Props) {
         {secondaryImages.map((img, i) => (
           <button
             type="button"
-            key={i}
+            key={img.asset.url}
             onClick={() => openLightbox(i + 1)}
             className="relative overflow-hidden cursor-pointer group"
           >
@@ -90,7 +90,11 @@ export default function ImageGallery({ images, title }: Props) {
         {/* Fill empty slots if less than 5 images */}
         {secondaryImages.length < 4 &&
           Array.from({ length: 4 - secondaryImages.length }).map((_, i) => (
-            <div key={`empty-${i}`} className="bg-gray-100" />
+            <div
+              // biome-ignore lint/suspicious/noArrayIndexKey: synthetic placeholder slots with no stable ID; index is the only valid differentiator and React requires unique keys
+              key={`empty-${i}`}
+              className="bg-gray-100"
+            />
           ))}
       </div>
 
