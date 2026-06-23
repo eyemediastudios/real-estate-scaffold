@@ -51,6 +51,7 @@ const secondaryColour = settings?.secondaryColour || "#c9a84c";
     `} />
     {settings?.googleAnalyticsId && (
       <script
+        is:inline
         async
         src={`https://www.googletagmanager.com/gtag/js?id=${settings.googleAnalyticsId}`}
       />
