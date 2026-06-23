@@ -49,6 +49,19 @@
       }
     }
   },
+  "overrides": [
+    {
+      "includes": ["scripts/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useTemplate": "off",
+            "useNodejsImportProtocol": "off"
+          }
+        }
+      }
+    }
+  ],
   "javascript": {
     "formatter": {
       "quoteStyle": "double",
